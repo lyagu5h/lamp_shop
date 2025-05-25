@@ -1,0 +1,49 @@
+.product-card {
+    &__link {
+        text-decoration: none;
+        color: inherit;
+        font-size: .875rem;
+    }
+    &__img {
+        // pointer-events: none;
+        width: 100%;
+        background-color: var(--product-background-color);
+    }
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: .625rem;
+        padding-top: 1.5rem;
+    }
+    &__name {
+        font-family: 'Inter Tight';
+        font-weight: 400;
+    }
+    &__price {
+        font-family: 'Anybody';
+    }
+
+    @media (max-width: 480px) {
+        &__img {
+            // pointer-events: none;
+            width: 100%;
+            background-color: var(--product-background-color);
+        }
+        &__info {
+            display: flex;
+            flex-direction: column;
+            gap: .625rem;
+            padding-top: 1.5rem;
+        }
+        &__name {
+            font-family: 'Inter Tight';
+            font-weight: 400;
+        }
+        &__price {
+            font-family: 'Anybody';
+        }
+    }
+
+    @media (max-width: 320px) {
+    }
+}

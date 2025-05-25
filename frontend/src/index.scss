@@ -1,0 +1,26 @@
+@import './fonts.scss';
+
+:root {
+  --primary-color: #2C2C2B;
+  --secondary-color: #E3DFD9;
+  --product-background-color: #e3dfd9e1;
+  --third-color: #1E1E1E;
+
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (prefers-color-scheme: light) {
+      --primary-color: #E3DFD9;
+      --secondary-color: #2C2C2B;
+  }
+
+}
+
+body {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+

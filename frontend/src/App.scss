@@ -1,0 +1,23 @@
+#root {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+  padding-inline: 2.6875rem;
+
+  @media (max-width: 768px) {
+    padding: .625rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: .3125rem;
+  }
+
+  @media (max-width: 320px) {
+    padding: 0;
+  }
+}
+
+
+
+
+

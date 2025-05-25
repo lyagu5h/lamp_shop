@@ -1,0 +1,82 @@
+.footer {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    // padding-bottom: 0;
+    // margin-top: auto;
+   
+    &__logo {
+        font-size: 9.3125rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 0;
+        font-family: 'Anybody';
+        color: var(--third-color);
+    }
+
+    &__contacts {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+
+    &__tel {
+        font-family: "Inter Tight";
+        text-decoration: none;
+        color: var(--secondary-color);
+        font-size: 1.5rem;
+    }
+
+    &__social-medias {
+        display: flex;
+        list-style: none;
+        flex-direction: row;
+        justify-content: space-between;
+        a {
+            font-family: 'Anybody';
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+        &__logo {
+            font-size: 6.25rem;
+        }
+
+        &__contacts {
+            gap: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        &__logo {
+            font-size: 4.375rem;
+        }
+    }
+
+    @media (max-width: 320px) {
+
+        &__tel {
+            font-family: "Inter Tight";
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+        }
+        
+        &__tel {
+            font-size: 1rem;
+        }
+
+        &__social-medias {
+            a {
+                font-size: 1rem;
+            }
+        }
+    }
+}
+
