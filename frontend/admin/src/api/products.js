@@ -14,6 +14,7 @@ export async function fetchProductById(id) {
 
 
 export async function createProduct(data) {
+  console.log(data)
   const res = await productsApi.post("/", data);
   return res.data;
 }
@@ -33,6 +34,6 @@ export async function deleteProduct(id) {
 
 
 export async function uploadProductImage(id, formData) {
-  const res = await productsApi.post(`/${id}/image`, formData);
+  const res = await productsApi.post(`/${id}/image`, formData, {headers: {'Content-Type': 'multipart/form-data'}});
   return res.data;
 }

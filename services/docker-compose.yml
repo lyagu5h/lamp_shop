@@ -60,7 +60,7 @@ services:
     volumes:
       - minio_data:/data
 
-  minio-setup:
+  inio-setup:
     image: minio/mc:latest
     depends_on:
       - minio
@@ -75,8 +75,8 @@ services:
         echo 'MinIO is up – configuring bucket policy';
         mc alias set local http://minio:9000 minioadmin minioadmin;
         mc mb --ignore-existing local/products-bucket;
-        mc anonymous set download local/products-bucket;
-        echo 'Bucket products-bucket is now public (read-only).';
+        mc anonymous set public local/products-bucket;
+        echo 'Bucket products-bucket is now public (read-write).';
       "
     restart: "no"
 

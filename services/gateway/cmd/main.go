@@ -15,7 +15,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/proxy"
-	jwt "github.com/gofiber/jwt/v3"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -56,7 +55,6 @@ func main() {
         log.Fatal("Need to set PRODUCTS_SERVICE_URL and ORDERS_SERVICE_URL")
     }
 
-	authURL := os.Getenv("AUTH_SERVICE_URL")
 
     port := os.Getenv("PORT")
     if port == "" {
@@ -74,20 +72,6 @@ func main() {
     }))
     validate := validator.New()
 
-	app.Post("/admin/login", func(c *fiber.Ctx) error {
-        return proxy.Do(c, authURL+"/auth/login")
-    })
-
-	authRequired := jwt.New(jwt.Config{
-        SigningKey:   []byte(os.Getenv("JWT_SECRET")),
-        ContextKey:   "user",
-        ErrorHandler: func(c *fiber.Ctx, err error) error {
-            return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
-        },
-    })
-
-	app.Use("/admin/products/*", authRequired)
-    app.Use("/admin/orders/*", authRequired)
 
     app.Post("/admin/products", func(c *fiber.Ctx) error {
         return proxy.Do(c, productsURL+"/products")

@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchOrders } from "../api/orders";
+import { fetchProducts } from "../api/products";
 
 
 export default function OrdersList() {
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState({});
   const navigate = useNavigate();
 
   const loadOrders = async () => {
     try {
-      const data = await fetchOrders(); // ожидаем array of Order
+      const data = await fetchOrders();
       setOrders(data);
     } catch (err) {
       console.error(err);
@@ -17,8 +19,21 @@ export default function OrdersList() {
     }
   };
 
+  const loadProducts = async() => {
+    try {
+      fetchProducts().then(prods => {
+        const m = Object.fromEntries(prods.map(p => [p.id, p]));
+        setProducts(m);
+      });
+    } catch (err) {
+      console.error(err);
+      navigate("/login");
+    }
+  }
+
   useEffect(() => {
     loadOrders();
+    loadProducts();
   }, []);
 
   return (
@@ -85,10 +100,15 @@ export default function OrdersList() {
                     <div className="p-2 bg-white border rounded">
                       <p className="text-sm font-medium mb-1">Товары в заказе:</p>
                       <ul className="list-disc list-inside text-sm">
-                        {o.items.map((item) => (
+                        {/* {o.items.map((item) => (
                           <li key={item.id}>
                             {item.product_id} — количество: {item.quantity}, цена:{" "}
                             {item.price.toFixed(2)} ₽
+                          </li>
+                        ))} */}
+                         {o.items.map((item) => (
+                          <li key={item.id}>
+                            {products[item.product_id].name} — количество: {item.quantity}, цена:{" "}{item.price.toFixed(2)} ₽
                           </li>
                         ))}
                       </ul>

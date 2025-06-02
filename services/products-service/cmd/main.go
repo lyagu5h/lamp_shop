@@ -16,11 +16,11 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	db "github.com/lyagu5h/products-service/internal/infrastructure/db"
+	min "github.com/lyagu5h/products-service/internal/infrastructure/minio"
 	"github.com/lyagu5h/products-service/internal/interface/httpapi"
 	"github.com/lyagu5h/products-service/internal/repository"
 	"github.com/lyagu5h/products-service/internal/usecase"
 	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/pressly/goose/v3"
 )
 
@@ -39,16 +39,11 @@ func main() {
     productRepo := repository.NewProductRepo(pg)
     productUC := usecase.NewProductUseCase(productRepo)
 
-    minioEndpoint := os.Getenv("MINIO_ENDPOINT")
-    minioAccessKey := os.Getenv("MINIO_ACCESS_KEY")
-    minioSecretKey := os.Getenv("MINIO_SECRET_KEY")
-    bucket := os.Getenv("MINIO_BUCKET")
-    minioClient, err := minio.New(minioEndpoint, &minio.Options{
-        Creds:  credentials.NewStaticV4(minioAccessKey, minioSecretKey, ""),
-        Secure: false,
-    })
-    if err != nil {
-        log.Fatalf("Не удалось создать MinIO client: %v", err)
+   
+    minioClient := min.NewMinioClient()
+    bucket := os.Getenv("MINIO_BUCKET_PRODUCTS")
+    if bucket == "" {
+        log.Fatal("MINIO_BUCKET_PRODUCTS must be set")
     }
 
     migrationsDir := "./migrations"

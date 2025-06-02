@@ -56,21 +56,24 @@ export default function ProductEdit() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "power") {
-        setForm((prev) => ({ ...prev, [name]: Number(value) }));
-    } else if (name == "price") {
-        setForm((prev) => ({ ...prev, [name]: Number(value) }));
-    } else if (name == "description") {
-        setForm((prev) => ({ ...prev, [name]: {
-            String: value,
-            Valid: Boolean(value)
-        }}));
+    if (name === "price" || name === "power") {
+      setForm((prev) => ({ ...prev, [name]: Number(value) }));
+    } else if (name === "description") {
+      setForm((prev) => ({
+        ...prev,
+        description: {
+          String: value,
+          Valid: Boolean(value),
+        },
+      }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
     }
-    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
+      console.log("Selected file:", e.target.files[0]);
       setFile(e.target.files[0]);
     } else {
       setFile(null);
@@ -81,6 +84,10 @@ export default function ProductEdit() {
     if (!file) return null;
     const formData = new FormData();
     formData.append("image", file);
+
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
     try {
       const response = await uploadProductImage(productId, formData);
       return response.image_url || null;
