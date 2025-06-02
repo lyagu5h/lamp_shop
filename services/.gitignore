@@ -1,0 +1,27 @@
+# Ignore Go build and test files
+_dist
+_cover
+_test
+
+# Ignore editor temp files
+*~
+\#*\#
+\.DS_Store
+\.directory
+\.lein-failures
+\.nrepl-port
+
+# Ignore vim temporary files
+*.swp
+
+# Ignore IDEA project settings
+.idea
+*.iml
+out
+gen
+
+# Ignore Gradle cache and build files
+.gradle
+build
+
+uploads

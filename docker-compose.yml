@@ -1,0 +1,136 @@
+version: "3.8"
+
+services:
+  postgres-auth:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+      POSTGRES_DB: auth_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres-auth
+    environment:
+      - AUTH_POSTGRES_DSN=postgres://auth_user:auth_pass@postgres-auth:5432/auth_db?sslmode=disable
+      - JWT_SECRET=your_super_secret_key
+      - PORT=8082
+    ports:
+      - "8082:8082"
+
+  postgres-products:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: products_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - products_data:/var/lib/postgresql/data
+
+  products-service:
+    build:
+      context: ./services/products-service
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres-products
+      - minio
+      - minio-setup
+    environment:
+      - PRODUCTS_POSTGRES_DSN=postgres://user:pass@postgres-products:5432/products_db?sslmode=disable
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET_PRODUCTS=products-bucket
+      - MINIO_PUBLIC_HOST=http://localhost:9000
+      - PORT=8080
+    ports:
+      - "8080:8080"
+
+  postgres-orders:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: orders_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - orders_data:/var/lib/postgresql/data
+
+  orders-service:
+    build:
+      context: ./services/orders-service
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres-orders
+    environment:
+      - ORDERS_POSTGRES_DSN=postgres://user:pass@postgres-orders:5432/orders_db?sslmode=disable
+      - PORT=8090
+    ports:
+      - "8090:8090"
+
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  minio-setup:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+        i=0;
+        until mc alias set local http://minio:9000 minioadmin minioadmin > /dev/null 2>&1 || [ \$i -ge 15 ]; do
+          sleep 2; i=\$((i+1));
+        done;
+        mc alias set local http://minio:9000 minioadmin minioadmin;
+        mc mb --ignore-existing local/products-bucket;
+        mc anonymous set download local/products-bucket;
+      "
+    restart: "no"
+
+  gateway-service:
+    build:
+      context: ./services/gateway-service
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres-products
+      - products-service
+      - postgres-orders
+      - orders-service
+      - auth-service
+    environment:
+      - PRODUCTS_DB_DSN=postgres://user:pass@postgres-products:5432/products_db?sslmode=disable
+      - PRODUCTS_SERVICE_URL=http://products-service:8080
+      - ORDERS_SERVICE_URL=http://orders-service:8090
+      - AUTH_SERVICE_URL=http://auth-service:8082
+      - JWT_SECRET=your_super_secret_key
+      - PORT=8000
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - gateway-service
+    ports:
+      - "5173:5173"

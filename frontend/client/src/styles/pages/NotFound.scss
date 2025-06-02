@@ -1,0 +1,15 @@
+.not-found {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    padding: 12.1875rem;
+    font-weight: bold;
+
+    p {
+        font-family: 'Anybody';
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+}
